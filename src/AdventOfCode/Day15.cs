@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 using AdventOfCode.Utilities;
 
 namespace AdventOfCode
@@ -18,10 +18,19 @@ namespace AdventOfCode
         public int Part2(string[] input)
         {
             int[,] template = input.ToGrid<int>();
+            int[,] grid = ExpandGrid(template);
+            return GetShortestPath(grid);
+        }
 
+        /// <summary>
+        /// Expand the grid to 5x its size, with added cost per replica
+        /// </summary>
+        /// <param name="template">Template grid</param>
+        /// <returns>Expanded grid</returns>
+        private static int[,] ExpandGrid(int[,] template)
+        {
             int[,] grid = new int[template.GetLength(0) * 5, template.GetLength(1) * 5];
 
-            // blow the grid up 5x
             for (int y = 0; y < grid.GetLength(0); y++)
             {
                 for (int x = 0; x < grid.GetLength(1); x++)
@@ -40,11 +49,11 @@ namespace AdventOfCode
                         value %= 9;
                     }
 
-                    grid[y,x] = value;
+                    grid[y, x] = value;
                 }
             }
 
-            return GetShortestPath(grid);
+            return grid;
         }
 
         /// <summary>
@@ -54,28 +63,44 @@ namespace AdventOfCode
         /// <returns>Shortest path</returns>
         private static int GetShortestPath(int[,] grid)
         {
-            var graph = new Graph<Point2D>(Graph<Point2D>.ManhattanDistanceHeuristic);
+            Point2D current = (0, 0);
+            Point2D target = (grid.GetLength(1) - 1, grid.GetLength(0) - 1);
 
-            for (int y = 0; y < grid.GetLength(0); y++)
+            // dijkstra's algorithm
+            var open = new PriorityQueue<Point2D, int>();
+            open.Enqueue(current, 0);
+
+            var distances = new Dictionary<Point2D, int> { [current] = 0 };
+            var closed = new HashSet<Point2D>();
+
+            while (open.Count > 0)
             {
-                for (int x = 0; x < grid.GetLength(1); x++)
+                current = open.Dequeue();
+                closed.Add(current);
+
+                if (current == target)
                 {
-                    Point2D current = (x, y);
-                    int currentCost = grid[y, x];
+                    return distances[target];
+                }
 
-                    foreach (Point2D neighbour in grid.Adjacent4Positions(x, y))
+                foreach (Point2D neighbour in grid.Adjacent4Positions(current))
+                {
+                    if (closed.Contains(neighbour))
                     {
-                        int cost = grid[neighbour.Y, neighbour.X];
-                        graph.AddVertex(current, neighbour, cost);
+                        continue;
+                    }
 
-                        graph.AddVertex(neighbour, current, currentCost);
+                    int neighbourCost = distances[current] + grid[neighbour.Y, neighbour.X];
+
+                    if (!distances.ContainsKey(neighbour) || distances[neighbour] > neighbourCost)
+                    {
+                        distances[neighbour] = neighbourCost;
+                        open.Enqueue(neighbour, neighbourCost);
                     }
                 }
             }
 
-            List<(Point2D node, int distance)> path = graph.GetShortestPath((0, 0), (grid.GetLength(1) - 1, grid.GetLength(0) - 1));
-
-            return path.Last().distance;
+            throw new InvalidOperationException("There is no path from start to end");
         }
     }
 }

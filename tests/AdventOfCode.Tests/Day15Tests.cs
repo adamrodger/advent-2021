@@ -23,7 +23,7 @@ namespace AdventOfCode.Tests
 
         private static string[] GetSampleInput()
         {
-            return new string[]
+            return new[]
             {
                 "1163751742",
                 "1381373672",
@@ -34,7 +34,7 @@ namespace AdventOfCode.Tests
                 "1359912421",
                 "3125421639",
                 "1293138521",
-                "2311944581",
+                "2311944581"
             };
         }
 
@@ -69,7 +69,7 @@ namespace AdventOfCode.Tests
             Assert.Equal(expected, result);
         }
 
-        [Fact(Skip = "Takes 20s to run")]
+        [Fact]
         public void Part2_RealInput_ProducesCorrectResponse()
         {
             var expected = 2876;
