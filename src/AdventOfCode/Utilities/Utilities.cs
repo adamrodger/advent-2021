@@ -12,7 +12,10 @@ namespace AdventOfCode.Utilities
         public static T[] Numbers<T>(this string input)
         {
             MatchCollection matches = Regex.Matches(input, @"-?\d+");
-            return matches.Cast<Match>().Select(m => m.Value).Select(m => (T)Convert.ChangeType(m, typeof(T))).ToArray();
+            return matches
+                  .Select(m => m.Value)
+                  .Select(m => (T)Convert.ChangeType(m, typeof(T)))
+                  .ToArray();
         }
 
         public static void ForEach<T>(this T[,] grid, Action<T> cellAction, Action lineAction = null)
@@ -130,7 +133,8 @@ namespace AdventOfCode.Utilities
             return result;
         }
 
-        public static TValue GetOrCreate<TKey, TValue>(this IDictionary<TKey, TValue> @this, TKey key) where TValue : new()
+        public static TValue GetOrCreate<TKey, TValue>(this IDictionary<TKey, TValue> @this, TKey key)
+            where TValue : new()
         {
             if (!@this.TryGetValue(key, out TValue value))
             {
@@ -212,6 +216,9 @@ namespace AdventOfCode.Utilities
             }
         }
 
+        public static IEnumerable<Point2D> Adjacent8Positions<T>(this T[,] grid, Point2D point)
+            => grid.Adjacent8Positions(point.X, point.Y);
+
         public static IEnumerable<Point2D> Adjacent8Positions<T>(this T[,] grid, int x, int y)
         {
             bool rowAbove = y - 1 >= 0;
@@ -270,6 +277,27 @@ namespace AdventOfCode.Utilities
                 for (int x = 0; x < input[y].Length; x++)
                 {
                     grid[y, x] = input[y][x];
+                }
+            }
+
+            return grid;
+        }
+
+        /// <summary>
+        /// Parse the grid
+        /// </summary>
+        /// <param name="input">Input lines</param>
+        /// <returns>Grid</returns>
+        public static T[,] ToGrid<T>(this string[] input)
+        {
+            // y,x remember, not x,y
+            T[,] grid = new T[input.Length, input[0].Length];
+
+            for (int y = 0; y < input.Length; y++)
+            {
+                for (int x = 0; x < input[y].Length; x++)
+                {
+                    grid[y, x] = (T)Convert.ChangeType(input[y][x].ToString(), typeof(T));
                 }
             }
 

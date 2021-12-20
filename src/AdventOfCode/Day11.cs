@@ -1,23 +1,25 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using AdventOfCode.Utilities;
 
 namespace AdventOfCode
 {
-/// <summary>
-/// Solver for Day 11
-/// </summary>
+    /// <summary>
+    /// Solver for Day 11
+    /// </summary>
     public class Day11
     {
+        private const int EnergyLimit = 9;
+        private const int EnergyReset = 0;
+
         public int Part1(string[] input)
         {
-            int[,] grid = ParseGrid(input);
+            int[,] grid = input.ToGrid<int>();
             return Enumerable.Range(0, 100).Aggregate(0, (current, _) => current + Step(grid));
         }
 
         public int Part2(string[] input)
         {
-            int[,] grid = ParseGrid(input);
+            int[,] grid = input.ToGrid<int>();
 
             int round = 0;
 
@@ -31,27 +33,6 @@ namespace AdventOfCode
                     return round;
                 }
             }
-        }
-
-        /// <summary>
-        /// Parse the grid
-        /// </summary>
-        /// <param name="input">Input lines</param>
-        /// <returns>Grid</returns>
-        private static int[,] ParseGrid(string[] input)
-        {
-            // y,x remember, not x,y
-            int[,] grid = new int[input.Length, input[0].Length];
-
-            for (int y = 0; y < input.Length; y++)
-            {
-                for (int x = 0; x < input[y].Length; x++)
-                {
-                    grid[y, x] = int.Parse(input[y][x].ToString());
-                }
-            }
-
-            return grid;
         }
 
         /// <summary>
@@ -70,49 +51,52 @@ namespace AdventOfCode
                 }
             }
 
-            Queue<Point2D> toFlash = new Queue<Point2D>();
-            HashSet<Point2D> flashed = new HashSet<Point2D>();
+            int flashes = 0;
 
-            // queue up any initial flashes
+            // check if anything is ready to flash
             for (int y = 0; y < grid.GetLength(0); y++)
             {
                 for (int x = 0; x < grid.GetLength(1); x++)
                 {
-                    if (grid[y, x] > 9)
+                    if (grid[y, x] > EnergyLimit)
                     {
-                        toFlash.Enqueue((x, y));
-                        flashed.Add((x, y));
+                        flashes += Flash((x, y), grid);
                     }
                 }
             }
 
-            while (toFlash.Any())
+            return flashes;
+        }
+
+        /// <summary>
+        /// Flash the given point
+        /// </summary>
+        /// <param name="point">Point to flash</param>
+        /// <param name="grid">Grid to modify</param>
+        /// <returns>Number of flashes caused (including cascades)</returns>
+        private static int Flash(Point2D point, int[,] grid)
+        {
+            grid[point.Y, point.X] = EnergyReset;
+            int flashes = 1;
+
+            foreach (Point2D adjacent in grid.Adjacent8Positions(point))
             {
-                Point2D flash = toFlash.Dequeue();
-
-                // increment all the adjacent ones, and see if that causes cascade flashes
-                foreach (Point2D adjacent in grid.Adjacent8Positions(flash.X, flash.Y))
+                if (grid[adjacent.Y, adjacent.X] == EnergyReset)
                 {
-                    if (flashed.Contains(adjacent))
-                    {
-                        continue;
-                    }
-                    
-                    grid[adjacent.Y, adjacent.X]++;
-
-                    // check if this causes a cascade flash
-                    if (grid[adjacent.Y, adjacent.X] > 9)
-                    {
-                        toFlash.Enqueue(adjacent);
-                        flashed.Add(adjacent);
-                    }
+                    // already flashed, don't increment again
+                    continue;
                 }
 
-                // reset flashed octopus back to 0
-                grid[flash.Y, flash.X] = 0;
+                grid[adjacent.Y, adjacent.X]++;
+
+                // check if this causes a cascade flash
+                if (grid[adjacent.Y, adjacent.X] > EnergyLimit)
+                {
+                    flashes += Flash(adjacent, grid);
+                }
             }
 
-            return flashed.Count;
+            return flashes;
         }
     }
 }
