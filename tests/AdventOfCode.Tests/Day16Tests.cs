@@ -24,7 +24,7 @@ namespace AdventOfCode.Tests
         [Fact]
         public void Part1_SampleInput1_ProducesCorrectResponse()
         {
-            uint expected = 0;
+            uint expected = 9;
 
             var result = solver.Part1(new [] { "38006F45291200" });
 
@@ -37,6 +37,46 @@ namespace AdventOfCode.Tests
             uint expected = 14;
 
             var result = solver.Part1(new[] { "EE00D40C823060" });
+
+            Assert.Equal(expected, result);
+        }
+
+        [Fact]
+        public void Part1_SampleInput3_ProducesCorrectResponse()
+        {
+            uint expected = 16;
+
+            var result = solver.Part1(new[] { "8A004A801A8002F478" });
+
+            Assert.Equal(expected, result);
+        }
+
+        [Fact]
+        public void Part1_SampleInput4_ProducesCorrectResponse()
+        {
+            uint expected = 12;
+
+            var result = solver.Part1(new[] { "620080001611562C8802118E34" });
+
+            Assert.Equal(expected, result);
+        }
+
+        [Fact]
+        public void Part1_SampleInput5_ProducesCorrectResponse()
+        {
+            uint expected = 23;
+
+            var result = solver.Part1(new[] { "C0015000016115A2E0802F182340" });
+
+            Assert.Equal(expected, result);
+        }
+
+        [Fact]
+        public void Part1_SampleInput6_ProducesCorrectResponse()
+        {
+            uint expected = 31;
+
+            var result = solver.Part1(new[] { "A0016C880162017C3686B18A3D4780" });
 
             Assert.Equal(expected, result);
         }

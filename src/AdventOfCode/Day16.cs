@@ -11,7 +11,7 @@ namespace AdventOfCode
     {
         public uint Part1(string[] input)
         {
-            string line = input.First();
+            string line = input.First().Trim();
 
             string binary = string.Join(string.Empty, line.Select(c => Convert.ToString(Convert.ToInt32(c.ToString(), 16), 2).PadLeft(4, '0')));
 
@@ -58,7 +58,7 @@ namespace AdventOfCode
                 }
             }
 
-            uint parsed = Convert.ToUInt32(value, 2);
+            ulong parsed = Convert.ToUInt64(value, 2);
 
             packet = new LiteralPacket { Version = version, Type = type, Value = parsed };
             taken = i;
@@ -74,7 +74,8 @@ namespace AdventOfCode
             int offset = 7;
             offset += lengthType == '1' ? 11 : 15;
 
-            int length = (int)Convert.ToUInt32(binary[7..offset], 2);
+            string lengthBits = binary[7..offset];
+            int length = (int)Convert.ToUInt32(lengthBits, 2);
 
             packet = new OperatorPacket
             {
@@ -146,7 +147,7 @@ namespace AdventOfCode
 
     public class LiteralPacket : Packet
     {
-        public uint Value { get; set; }
+        public ulong Value { get; set; }
     }
 
     public class OperatorPacket : Packet
