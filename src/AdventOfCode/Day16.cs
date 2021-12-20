@@ -20,14 +20,15 @@ namespace AdventOfCode
             return AddVersions(packet);
         }
 
-        public uint Part2(string[] input)
+        public ulong Part2(string[] input)
         {
-            foreach (string line in input)
-            {
-                throw new NotImplementedException("Part 2 not implemented");
-            }
+            string line = input.First().Trim();
 
-            return 0;
+            string binary = string.Join(string.Empty, line.Select(c => Convert.ToString(Convert.ToInt32(c.ToString(), 16), 2).PadLeft(4, '0')));
+
+            TryParseOperator(binary, out OperatorPacket packet, out _);
+
+            return packet.Evaluate();
         }
 
         private static bool TryParseLiteral(string binary, out LiteralPacket packet, out int taken)
@@ -143,15 +144,93 @@ namespace AdventOfCode
         public uint Version { get; set; }
 
         public uint Type { get; set; }
+
+        public abstract ulong Evaluate();
     }
 
     public class LiteralPacket : Packet
     {
         public ulong Value { get; set; }
+
+        public override ulong Evaluate()
+        {
+            return this.Value;
+        }
     }
 
     public class OperatorPacket : Packet
     {
         public ICollection<Packet> Inner { get; set; } = new List<Packet>();
+
+        public override ulong Evaluate()
+        {
+            ulong result;
+            Packet first;
+            Packet second;
+
+            switch (this.Type)
+            {
+                case 0:
+                    result = 0;
+
+                    foreach (Packet inner in this.Inner)
+                    {
+                        result += inner.Evaluate();
+                    }
+
+                    return result;
+
+                case 1:
+                    result = 1;
+
+                    foreach (Packet inner in this.Inner)
+                    {
+                        result *= inner.Evaluate();
+                    }
+
+                    return result;
+
+                case 2:
+                    result = ulong.MaxValue;
+
+                    foreach (Packet inner in this.Inner)
+                    {
+                        result = Math.Min(result, inner.Evaluate());
+                    }
+
+                    return result;
+
+                case 3:
+                    result = ulong.MinValue;
+
+                    foreach (Packet inner in this.Inner)
+                    {
+                        result = Math.Max(result, inner.Evaluate());
+                    }
+
+                    return result;
+
+                case 5:
+                    first = this.Inner.ElementAt(0);
+                    second = this.Inner.ElementAt(1);
+
+                    return first.Evaluate() > second.Evaluate() ? (ulong)1 : 0;
+
+                case 6:
+                    first = this.Inner.ElementAt(0);
+                    second = this.Inner.ElementAt(1);
+
+                    return first.Evaluate() < second.Evaluate() ? (ulong)1 : 0;
+
+                case 7:
+                    first = this.Inner.ElementAt(0);
+                    second = this.Inner.ElementAt(1);
+
+                    return first.Evaluate() == second.Evaluate() ? (ulong)1 : 0;
+
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
     }
 }

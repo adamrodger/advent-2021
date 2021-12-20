@@ -84,7 +84,7 @@ namespace AdventOfCode.Tests
         [Fact]
         public void Part1_RealInput_ProducesCorrectResponse()
         {
-            uint expected = 0;
+            uint expected = 981;
 
             var result = solver.Part1(GetRealInput());
             output.WriteLine($"Day 16 - Part 1 - {result}");
@@ -92,20 +92,10 @@ namespace AdventOfCode.Tests
             Assert.Equal(expected, result);
         }
 
-        /*[Fact]
-        public void Part2_SampleInput_ProducesCorrectResponse()
-        {
-            uint expected = 0;
-
-            var result = solver.Part2(GetSampleInput());
-
-            Assert.Equal(expected, result);
-        }*/
-
         [Fact]
         public void Part2_RealInput_ProducesCorrectResponse()
         {
-            uint expected = 0;
+            ulong expected = 299227024091;
 
             var result = solver.Part2(GetRealInput());
             output.WriteLine($"Day 16 - Part 2 - {result}");
