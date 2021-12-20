@@ -1,12 +1,12 @@
-﻿namespace AdventOfCode.Utilities
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Linq;
-    using System.Text;
-    using System.Text.RegularExpressions;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 
+namespace AdventOfCode.Utilities
+{
     public static class Utilities
     {
         public static T[] Numbers<T>(this string input)
@@ -209,6 +209,54 @@
             if (rowBelow && columnAfter)
             {
                 yield return grid[y + 1, x + 1];
+            }
+        }
+
+        public static IEnumerable<Point2D> Adjacent8Positions<T>(this T[,] grid, int x, int y)
+        {
+            bool rowAbove = y - 1 >= 0;
+            bool rowBelow = y + 1 < grid.GetLength(0);
+            bool columnBefore = x - 1 >= 0;
+            bool columnAfter = x + 1 < grid.GetLength(1);
+
+            if (rowAbove && columnBefore)
+            {
+                yield return (x - 1, y - 1);
+            }
+
+            if (rowAbove)
+            {
+                yield return (x, y - 1);
+            }
+
+            if (rowAbove && columnAfter)
+            {
+                yield return (x + 1, y - 1);
+            }
+
+            if (columnBefore)
+            {
+                yield return (x - 1, y);
+            }
+
+            if (columnAfter)
+            {
+                yield return (x + 1, y);
+            }
+
+            if (rowBelow && columnBefore)
+            {
+                yield return (x - 1, y + 1);
+            }
+
+            if (rowBelow)
+            {
+                yield return (x, y + 1);
+            }
+
+            if (rowBelow && columnAfter)
+            {
+                yield return (x + 1, y + 1);
             }
         }
 
