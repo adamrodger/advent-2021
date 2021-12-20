@@ -179,6 +179,29 @@ namespace AdventOfCode.Utilities
             }
         }
 
+        public static IEnumerable<Point2D> Adjacent4Positions<T>(this T[,] grid, int x, int y)
+        {
+            if (y - 1 >= 0)
+            {
+                yield return (x, y - 1);
+            }
+
+            if (x - 1 >= 0)
+            {
+                yield return (x - 1, y);
+            }
+
+            if (x + 1 < grid.GetLength(1))
+            {
+                yield return (x + 1, y);
+            }
+
+            if (y + 1 < grid.GetLength(0))
+            {
+                yield return (x, y + 1);
+            }
+        }
+
         public static IEnumerable<T> Adjacent8<T>(this T[,] grid, int x, int y)
         {
             bool rowAbove = y - 1 >= 0;
