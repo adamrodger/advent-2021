@@ -120,7 +120,7 @@
             builder.AppendLine();
 
             string result = builder.ToString();
-            
+
             if (print)
             {
                 Debug.Write(result);
