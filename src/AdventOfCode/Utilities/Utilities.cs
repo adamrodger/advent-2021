@@ -145,6 +145,17 @@ namespace AdventOfCode.Utilities
             return value;
         }
 
+        public static TValue GetOrCreate<TKey, TValue>(this IDictionary<TKey, TValue> @this, TKey key, Func<TValue> factory)
+        {
+            if (!@this.TryGetValue(key, out TValue value))
+            {
+                value = factory();
+                @this.Add(key, value);
+            }
+
+            return value;
+        }
+
         public static IEnumerable<T> Adjacent4<T>(this T[,] grid, int x, int y)
         {
             if (y - 1 >= 0)
