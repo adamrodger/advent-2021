@@ -1,10 +1,8 @@
-﻿namespace AdventOfCode.Utilities
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using MoreLinq;
+﻿using System;
+using System.Collections.Generic;
 
+namespace AdventOfCode.Utilities
+{
     /// <summary>
     /// A generic graph of nodes with edges between them
     /// </summary>
@@ -33,7 +31,7 @@
         public Graph(Func<TNode, TNode, int> heuristic = null)
         {
             this.Vertices = new Dictionary<TNode, List<(TNode next, int cost)>>();
-            this.heuristic = heuristic ?? ((_, __) => 0);
+            this.heuristic = heuristic ?? ((_, _) => 0);
         }
 
         /// <summary>
@@ -60,21 +58,14 @@
         {
             var parents = new Dictionary<TNode, TNode>();
             var distances = new Dictionary<TNode, int> { [start] = 0 }; // 'G' of each node, in A* nomenclature
-            var open = new HashSet<TNode> { start };
+            var open = new PriorityQueue<TNode, int>();
+            open.Enqueue(start, 0);
             var closed = new HashSet<TNode>();
 
-            while (open.Any())
+            while (open.Count > 0)
             {
                 // sort nodes by current distance plus the estimated distance to the destination
-                TNode current = open.MinBy(node => distances[node] + this.heuristic(node, finish)).First();
-                open.Remove(current);
-
-                if (closed.Contains(current))
-                {
-                    // don't revisit
-                    continue;
-                }
-
+                TNode current = open.Dequeue();
                 closed.Add(current);
 
                 // check if we've reached destination
@@ -108,7 +99,8 @@
                         distances[next] = newDistance;
                         parents[next] = current;
 
-                        open.Add(next);
+                        int h = this.heuristic(next, finish);
+                        open.Enqueue(next, newDistance + h);
                     }
                 }
             }
