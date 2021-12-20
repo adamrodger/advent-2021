@@ -1,0 +1,249 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+
+namespace AdventOfCode.Utilities
+{
+    public static class Utilities
+    {
+        public static T[] Numbers<T>(this string input)
+        {
+            MatchCollection matches = Regex.Matches(input, @"-?\d+");
+            return matches
+                  .Select(m => m.Value)
+                  .Select(m => (T)Convert.ChangeType(m, typeof(T)))
+                  .ToArray();
+        }
+
+        public static TValue GetOrCreate<TKey, TValue>(this IDictionary<TKey, TValue> @this, TKey key) where TValue : new()
+        {
+            if (!@this.TryGetValue(key, out TValue value))
+            {
+                value = new TValue();
+                @this.Add(key, value);
+            }
+
+            return value;
+        }
+
+        public static TValue GetOrCreate<TKey, TValue>(this IDictionary<TKey, TValue> @this, TKey key, Func<TValue> factory)
+        {
+            if (!@this.TryGetValue(key, out TValue value))
+            {
+                value = factory();
+                @this.Add(key, value);
+            }
+
+            return value;
+        }
+
+<<<<<<< HEAD
+        public static IEnumerable<T> Adjacent4<T>(this T[,] grid, int x, int y)
+        {
+            if (y - 1 >= 0)
+            {
+                yield return grid[y - 1, x];
+            }
+
+            if (x - 1 >= 0)
+            {
+                yield return grid[y, x - 1];
+            }
+
+            if (x + 1 < grid.GetLength(1))
+            {
+                yield return grid[y, x + 1];
+            }
+
+            if (y + 1 < grid.GetLength(0))
+            {
+                yield return grid[y + 1, x];
+            }
+        }
+
+        public static IEnumerable<Point2D> Adjacent4Positions<T>(this T[,] grid, int x, int y)
+        {
+            if (y - 1 >= 0)
+            {
+                yield return (x, y - 1);
+            }
+
+            if (x - 1 >= 0)
+            {
+                yield return (x - 1, y);
+            }
+
+            if (x + 1 < grid.GetLength(1))
+            {
+                yield return (x + 1, y);
+            }
+
+            if (y + 1 < grid.GetLength(0))
+            {
+                yield return (x, y + 1);
+            }
+        }
+
+        public static IEnumerable<T> Adjacent8<T>(this T[,] grid, int x, int y)
+        {
+            bool rowAbove = y - 1 >= 0;
+            bool rowBelow = y + 1 < grid.GetLength(0);
+            bool columnBefore = x - 1 >= 0;
+            bool columnAfter = x + 1 < grid.GetLength(1);
+
+            if (rowAbove && columnBefore)
+            {
+                yield return grid[y - 1, x - 1];
+            }
+
+            if (rowAbove)
+            {
+                yield return grid[y - 1, x];
+            }
+
+            if (rowAbove && columnAfter)
+            {
+                yield return grid[y - 1, x + 1];
+            }
+
+            if (columnBefore)
+            {
+                yield return grid[y, x - 1];
+            }
+
+            if (columnAfter)
+            {
+                yield return grid[y, x + 1];
+            }
+
+            if (rowBelow && columnBefore)
+            {
+                yield return grid[y + 1, x - 1];
+            }
+
+            if (rowBelow)
+            {
+                yield return grid[y + 1, x];
+            }
+
+            if (rowBelow && columnAfter)
+            {
+                yield return grid[y + 1, x + 1];
+            }
+        }
+
+        public static IEnumerable<Point2D> Adjacent8Positions<T>(this T[,] grid, Point2D point)
+            => grid.Adjacent8Positions(point.X, point.Y);
+
+        public static IEnumerable<Point2D> Adjacent8Positions<T>(this T[,] grid, int x, int y)
+        {
+            bool rowAbove = y - 1 >= 0;
+            bool rowBelow = y + 1 < grid.GetLength(0);
+            bool columnBefore = x - 1 >= 0;
+            bool columnAfter = x + 1 < grid.GetLength(1);
+
+            if (rowAbove && columnBefore)
+            {
+                yield return (x - 1, y - 1);
+            }
+
+            if (rowAbove)
+            {
+                yield return (x, y - 1);
+            }
+
+            if (rowAbove && columnAfter)
+            {
+                yield return (x + 1, y - 1);
+            }
+
+            if (columnBefore)
+            {
+                yield return (x - 1, y);
+            }
+
+            if (columnAfter)
+            {
+                yield return (x + 1, y);
+            }
+
+            if (rowBelow && columnBefore)
+            {
+                yield return (x - 1, y + 1);
+            }
+
+            if (rowBelow)
+            {
+                yield return (x, y + 1);
+            }
+
+            if (rowBelow && columnAfter)
+            {
+                yield return (x + 1, y + 1);
+            }
+        }
+
+        public static char[,] ToGrid(this string[] input)
+        {
+            // y,x remember, not x,y
+            char[,] grid = new char[input.Length, input[0].Length];
+
+            for (int y = 0; y < input.Length; y++)
+            {
+                for (int x = 0; x < input[y].Length; x++)
+                {
+                    grid[y, x] = input[y][x];
+                }
+            }
+
+            return grid;
+        }
+
+        /// <summary>
+        /// Parse the grid
+        /// </summary>
+        /// <param name="input">Input lines</param>
+        /// <returns>Grid</returns>
+        public static T[,] ToGrid<T>(this string[] input)
+        {
+            // y,x remember, not x,y
+            T[,] grid = new T[input.Length, input[0].Length];
+
+            for (int y = 0; y < input.Length; y++)
+            {
+                for (int x = 0; x < input[y].Length; x++)
+                {
+                    grid[y, x] = (T)Convert.ChangeType(input[y][x].ToString(), typeof(T));
+                }
+            }
+
+            return grid;
+        }
+
+        public static int Abs(this int x)
+        {
+            return Math.Abs(x);
+        }
+=======
+        /// <summary>
+        /// Sum all items that can be used with ulong
+        /// </summary>
+        /// <param name="items">Items to sum</param>
+        /// <param name="selector">Func for extracting a ulong from each item</param>
+        /// <returns>Sum of ulongs from the items</returns>
+        /// <remarks>Why doesn't the standard LINQ Sum() work with ulong?!</remarks>
+        public static ulong Sum<T>(this IEnumerable<T> items, Func<T, ulong> selector)
+            => items.Aggregate<T, ulong>(0, (acc, next) => acc + selector(next));
+
+        /// <summary>
+        /// Multiply all numbers
+        /// </summary>
+        /// <param name="items">Items to multiply</param>
+        /// <param name="selector">Func for extracting a ulong from each item</param>
+        /// <returns>Product of numbers</returns>
+        public static ulong Product<T>(this IEnumerable<T> items, Func<T, ulong> selector)
+            => items.Aggregate<T, ulong>(1, (acc, next) => acc * selector(next));
+>>>>>>> 551eec8... Move grid utilities into their own class
+    }
+}
