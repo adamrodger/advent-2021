@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using AdventOfCode.Utilities;
-using MoreLinq;
 
 namespace AdventOfCode
 {
@@ -69,7 +68,17 @@ namespace AdventOfCode
         /// <returns>Number of times each player won</returns>
         public static (long one, long two) CountWinners(int start1, int start2)
         {
-            int[] dice = { 1, 2, 3 };
+            // lookup of 3-dice total and number of ways it can happen
+            var movesLookup = new Dictionary<int, int>
+            {
+                [3] = 1,
+                [4] = 3,
+                [5] = 6,
+                [6] = 7,
+                [7] = 6,
+                [8] = 3,
+                [9] = 1
+            };
 
             return CountWinnersInternal(start1, 0, start2, 0, true, new Dictionary<(int, int, int, int, bool), (long, long)>());
 
@@ -87,9 +96,8 @@ namespace AdventOfCode
 
                 long oneWins = 0;
                 long twoWins = 0;
-
-                // TODO: Really this only needs to consider the 7 possible totals instead of all 27 possibilities, but then the result needs weighting also
-                foreach (int moves in MoreEnumerable.Cartesian(dice, dice, dice, (a,b,c) => a + b + c))
+                
+                foreach ((int moves, int modifier) in movesLookup)
                 {
                     (long one, long two) subWinners;
 
@@ -110,8 +118,8 @@ namespace AdventOfCode
                                                        () => CountWinnersInternal(position1, score1, nextPosition, nextScore, true, cache));
                     }
 
-                    oneWins += subWinners.one;
-                    twoWins += subWinners.two;
+                    oneWins += subWinners.one * modifier;
+                    twoWins += subWinners.two * modifier;
                 }
                 
                 return (oneWins, twoWins);
