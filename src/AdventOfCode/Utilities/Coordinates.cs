@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace AdventOfCode.Utilities
@@ -182,6 +182,11 @@ namespace AdventOfCode.Utilities
             return new Point3D(a.X + b.X, a.Y + b.Y, a.Z + b.Z);
         }
 
+        public static Point3D operator -(Point3D a, Point3D b)
+        {
+            return new Point3D(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
+        }
+
         public IEnumerable<Point3D> Adjacent4()
         {
             yield return new Point3D(this.X, this.Y - 1, this.Z);
@@ -193,6 +198,18 @@ namespace AdventOfCode.Utilities
         public override string ToString()
         {
             return $"{this.X}, {this.Y}, {this.Z}";
+        }
+
+        public int ManhattanDistance(Point3D other)
+        {
+            return Math.Abs(this.X - other.X) + Math.Abs(this.Y - other.Y) + Math.Abs(this.Z - other.Z);
+        }
+
+        public void Deconstruct(out int x, out int y, out int z)
+        {
+            x = this.X;
+            y = this.Y;
+            z = this.Z;
         }
     }
 }

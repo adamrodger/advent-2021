@@ -38,5 +38,15 @@ namespace AdventOfCode.Utilities
 
             return value;
         }
+
+        public static IEnumerable<(int i, T item)> Enumerate<T>(this IEnumerable<T> @this)
+        {
+            int i = 0;
+
+            foreach (T item in @this)
+            {
+                yield return (i++, item);
+            }
+        }
     }
 }
