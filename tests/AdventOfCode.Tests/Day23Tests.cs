@@ -27,7 +27,7 @@ namespace AdventOfCode.Tests
             var expected = 17400;
 
             var result = solver.Part1(GetRealInput());
-            output.WriteLine($"Day XX - Part 1 - {result}");
+            output.WriteLine($"Day 23 - Part 1 - {result}");
 
             Assert.Equal(expected, result);
         }
@@ -38,7 +38,7 @@ namespace AdventOfCode.Tests
             var expected = 46120;
 
             var result = solver.Part2(GetRealInput());
-            output.WriteLine($"Day XX - Part 2 - {result}");
+            output.WriteLine($"Day 23 - Part 2 - {result}");
 
             Assert.Equal(expected, result);
         }
