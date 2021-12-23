@@ -15,43 +15,34 @@ namespace AdventOfCode
         public int Part1(string[] _)
         {
             /*
-
-            #############
-            #...........#
-            ###D#C#A#B###
-              #C#D#A#B#
-              #########
-
+                #############
+                #...........#
+                ###D#C#A#B###
+                  #C#D#A#B#
+                  #########
              */
-
-            State start = new(".......", "DC", "CD", "AA", "BB");
+            
+            State start  = new(".......", "DC", "CD", "AA", "BB");
             State target = new(".......", "AA", "BB", "CC", "DD");
 
             return ShortestPath(start, target);
-
-            //return 17400; // did it by hand
         }
 
         public int Part2(string[] _)
         {
             /*
-
-            #############
-            #...........#
-            ###D#C#A#B###
-              #D#C#B#A#
-              #D#B#A#C#
-              #C#D#A#B#
-              #########
-
+                #############
+                #...........#
+                ###D#C#A#B###
+                  #D#C#B#A#
+                  #D#B#A#C#
+                  #C#D#A#B#
+                  #########
             */
-
             State start  = new(".......", "DDDC", "CCBD", "ABAA", "BACB");
             State target = new(".......", "AAAA", "BBBB", "CCCC", "DDDD");
 
             return ShortestPath(start, target);
-
-            //return 46120; // did it by hand
         }
 
         /// <summary>
@@ -143,14 +134,14 @@ namespace AdventOfCode
             /// <returns>All valid next moves and the additional cost to get to them</returns>
             public IEnumerable<(State next, int cost)> ValidMoves()
             {
-                // try and place anything that's waiting
-                foreach ((State next, int cost) pair in this.MoveWaiting())
+                // try and move out anything that's ready to move
+                foreach ((State next, int cost) pair in this.MoveTopOfRooms())
                 {
                     yield return pair;
                 }
 
-                // try and move out anything that's ready to move
-                foreach ((State next, int cost) pair in this.MoveTopOfRooms())
+                // try and place anything that's waiting
+                foreach ((State next, int cost) pair in this.MoveWaiting())
                 {
                     yield return pair;
                 }
@@ -173,14 +164,7 @@ namespace AdventOfCode
                         continue;
                     }
 
-                    if ((roomId == 0 && top == 'A')
-                     || (roomId == 1 && top == 'B')
-                     || (roomId == 2 && top == 'C')
-                     || (roomId == 3 && top == 'D'))
-                    {
-                        // if it's already in the correct place, leave it
-                        continue;
-                    }
+                    // TODO: Can we tell which elements already moved into a room and therefore stop trying to move them out again here?
 
                     string modifiedRoom = ReplaceChar(room, '.', i);
 
@@ -281,56 +265,23 @@ namespace AdventOfCode
             /// </summary>
             private bool IsBlocked(int roomId, int waitingPosition, bool excludeWaitingPosition = false)
             {
-                string corridor = (roomId, waitingPosition) switch
-                {
-                    (0, 0) => this.Waiting[0..2],
-                    (0, 1) => this.Waiting[1..2],
-                    (0, 2) => this.Waiting[2..3],
-                    (0, 3) => this.Waiting[2..4],
-                    (0, 4) => this.Waiting[2..5],
-                    (0, 5) => this.Waiting[2..6],
-                    (0, 6) => this.Waiting[2..7],
-
-                    (1, 0) => this.Waiting[0..3],
-                    (1, 1) => this.Waiting[1..3],
-                    (1, 2) => this.Waiting[2..3],
-                    (1, 3) => this.Waiting[3..4],
-                    (1, 4) => this.Waiting[3..5],
-                    (1, 5) => this.Waiting[3..6],
-                    (1, 6) => this.Waiting[3..7],
-
-                    (2, 0) => this.Waiting[0..4],
-                    (2, 1) => this.Waiting[1..4],
-                    (2, 2) => this.Waiting[2..4],
-                    (2, 3) => this.Waiting[3..4],
-                    (2, 4) => this.Waiting[4..5],
-                    (2, 5) => this.Waiting[4..6],
-                    (2, 6) => this.Waiting[4..7],
-
-                    (3, 0) => this.Waiting[0..5],
-                    (3, 1) => this.Waiting[1..5],
-                    (3, 2) => this.Waiting[2..5],
-                    (3, 3) => this.Waiting[3..5],
-                    (3, 4) => this.Waiting[4..5],
-                    (3, 5) => this.Waiting[5..6],
-                    (3, 6) => this.Waiting[5..7],
-
-                    _ => throw new ArgumentOutOfRangeException()
-                };
+                int start = Math.Min(waitingPosition, roomId + 2);
+                int end = Math.Max(waitingPosition + 1, roomId + 2);
 
                 if (excludeWaitingPosition)
                 {
                     if (waitingPosition < roomId + 2)
                     {
                         // moving from the left
-                        corridor = corridor[1..];
+                        start++;
                     }
                     else
                     {
-                        corridor = corridor[..^1];
+                        end--;
                     }
                 }
 
+                string corridor = this.Waiting[start..end];
                 return corridor.Any(c => c != '.');
             }
 
